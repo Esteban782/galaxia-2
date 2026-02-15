@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Para Yarianna 💫</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:black;
+    font-family:Arial, Helvetica, sans-serif;
+    color:white;
+    text-align:center;
+}
+
+#mensaje{
+    position:absolute;
+    top:40%;
+    width:100%;
+    font-size:55px;
+    text-shadow:0 0 20px #ff66ff,0 0 40px #ff99ff,0 0 80px white;
+    z-index:3;
+    opacity:0;
+    transition:1.5s;
+}
+
+#agujero{
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:black;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    box-shadow:
+        0 0 80px 40px rgba(255,255,255,0.05),
+        0 0 160px 80px rgba(255,0,255,0.08),
+        0 0 260px 120px rgba(0,0,255,0.05);
+    z-index:2;
+}
+
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="mensaje">te amo demasiado yarianna 💖</div>
+<div id="agujero"></div>
+<canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let cx = canvas.width/2;
+let cy = canvas.height/2;
+
+let estrellas=[];
+let explotando=false;
+
+const palabras=[
+"amor","princesa","mi vida","hermosa","mi cielo",
+"mi universo","mi niña","mi corazón","mi todo",
+"eternidad","mi razón","luz","mi sueño","mi paz"
+];
+
+for(let i=0;i<250;i++){
+    estrellas.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        dx:(Math.random()-0.5)*2,
+        dy:(Math.random()-0.5)*2,
+        palabra:palabras[Math.floor(Math.random()*palabras.length)],
+        size:Math.random()*12+10
+    });
+}
+
+function animar(){
+    ctx.fillStyle="black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    estrellas.forEach(e=>{
+        if(!explotando){
+            e.x+=e.dx;
+            e.y+=e.dy;
+        }else{
+            let ang=Math.atan2(cy-e.y,cx-e.x);
+            e.x+=Math.cos(ang)*4;
+            e.y+=Math.sin(ang)*4;
+        }
+
+        ctx.fillStyle="white";
+        ctx.font=e.size+"px Arial";
+        ctx.fillText(e.palabra,e.x,e.y);
+    });
+
+    requestAnimationFrame(animar);
+}
+
+animar();
+
+/* activar absorción */
+function activarExplosion(){
+    explotando=true;
+
+    setTimeout(()=>{
+        estrellas=[];
+        document.getElementById("mensaje").style.opacity=1;
+        explosionVisual();
+    },2000);
+}
+
+/* efecto explosión */
+function explosionVisual(){
+    for(let i=0;i<100;i++){
+        let part={
+            x:cx,
+            y:cy,
+            dx:(Math.random()-0.5)*10,
+            dy:(Math.random()-0.5)*10,
+            life:60
+        };
+
+        let intervalo=setInterval(()=>{
+            ctx.fillStyle="rgba(255,0,150,0.8)";
+            ctx.beginPath();
+            ctx.arc(part.x,part.y,3,0,Math.PI*2);
+            ctx.fill();
+
+            part.x+=part.dx;
+            part.y+=part.dy;
+            part.life--;
+
+            if(part.life<=0){
+                clearInterval(intervalo);
+            }
+        },16);
+    }
+}
+
+canvas.addEventListener("click",activarExplosion);
+canvas.addEventListener("touchstart",activarExplosion);
+</script>
+
+</body>
+</html>
